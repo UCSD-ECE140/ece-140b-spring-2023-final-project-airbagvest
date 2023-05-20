@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset='utf-8'>
+    <title>Login</title>
+    <meta name='viewport' content='width=device-width, initial-scale=1'>
+
+    <link rel='stylesheet' type='text/css' href='public/main.css'>
+    <script src="public/login.js" defer></script>
+  </head>
+  <body>
+    <div class = "heading">
+      <table>
+        <tr>
+          <td>
+            <button class="logo link"> <a href="/">
+              <img src="/public/favicon.ico" alt="Home" style="width:42px;height:42px;">
+            </a> </button>
+          </td>
+          <td></td>
+          <td class="navi">
+            <button class="link"> <a href="/register">
+              Register
+            </a> </button>
+            <td>
+          <td>
+        </tr>
+      </table></div>
+
+    <h1>Welcome, Please Login</h1>
+
+    <main>
+      <form name='login_form' action='/login' method='POST'>
+        <div class='form_row'>
+          <div class="giveGradient borderedBig">Username</div>
+          <input class="borderedBig" type='text' name='username' required placeholder='Username'>
+          <div class="giveGradient borderedBig">Password</div>
+          <input class="borderedBig" type='password' name='password' required placeholder='Password'>
+          <p></p>
+          <div class="hSpacer"></div>
+          <input class='link buttons' type='submit' value='Login'>
+        </div>
+        <p class="vSpacer"> </p>
+      </form>
+      <button class="link"> <a href="/forgotPassword">
+        Forgot Password?
+      </a> </button>
+    </main>
+
+  </body>
+</html>
