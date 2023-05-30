@@ -35,7 +35,6 @@ views = Jinja2Templates(directory= os.path.dirname(__file__) + '/views')        
 class User(BaseModel):
   first_name: str
   last_name: str
-  student_id: str
   email: str
   username: str
   password: str
@@ -49,28 +48,38 @@ class PasswordForgetter(BaseModel):
   password: str
 
 # Define a User class that matches the SQL schema we defined for our users
-class RewriteUser(BaseModel):
+class RewriteUser(BaseModel): # TODO use different unique identifier for password reset
   current_studentID: str
   first_name: str = ""
   last_name: str = ""
-  student_id: str = ""
   email: str = ""
   username: str = ""
   password: str = ""
 
 # Define a User class that matches the SQL schema we defined for our users
-class CommentRequester(BaseModel):
-  project_id: int
+class NewAirbag(BaseModel):
+  battery: int
+  pressurized: int
 
 # Define a User class that matches the SQL schema we defined for our users
-class NewComment(BaseModel):
-  comment: str
-  project_id: int
+class AirbagRequester(BaseModel):
+  airbag_id: int
+  username: str = ""
 
 # Define a User class that matches the SQL schema we defined for our users
-class OldComment(BaseModel):
-  comment: str
-  comment_id: int
+class UpdateBattery(BaseModel):
+  battery: int
+  airbag_id: int
+
+# Define a User class that matches the SQL schema we defined for our users
+class UpdatePressurized(BaseModel):
+  pressurized: int
+  airbag_id: int
+
+# Define a User class that matches the SQL schema we defined for our users
+class UpdateUser(BaseModel):
+  username: str = ""
+  airbag_id: int
 
 # Configuration
 app = FastAPI()                   # Specify the "app" that will run the routing
@@ -103,24 +112,13 @@ def get_html(request:Request) -> HTMLResponse:
         return RedirectResponse(url="/login", status_code=302)
 
 # Example route: return a HTML page
-@app.get("/mvp", response_class=HTMLResponse)
+@app.get("/jacket", response_class=HTMLResponse)
 def get_html(request:Request) -> HTMLResponse:
     session = sessions.get_session(request)
     if len(session) > 0 and session.get('logged_in'):
         session_id = request.cookies.get("session_id")
         template_data = {'request':request, 'session':session, 'session_id':session_id}
-        return views.TemplateResponse('MVP.html', template_data)
-    else:
-        return RedirectResponse(url="/login", status_code=302)
-
-# Example route: return a HTML page
-@app.get("/leaderboard", response_class=HTMLResponse)
-def get_html(request:Request) -> HTMLResponse:
-    session = sessions.get_session(request)
-    if len(session) > 0 and session.get('logged_in'):
-        session_id = request.cookies.get("session_id")
-        template_data = {'request':request, 'session':session, 'session_id':session_id}
-        return views.TemplateResponse('leaderboard.html', template_data)
+        return views.TemplateResponse('jacket.html', template_data)
     else:
         return RedirectResponse(url="/login", status_code=302)
 
@@ -222,60 +220,38 @@ def post_forgor(visitor:PasswordForgetter, request:Request, response:Response) -
     return {'message': 'Password change successful', 'changed' : True}
   else:
     return {'message': 'Invalid email or password', 'changed' : False}
-
-# unnecessary?
-@app.get('/comments')
-def getComments(request:Request) -> JSONResponse:
-  comments = airbagdb.select_comments()
-  return comments
-
-# unnecessary?
-@app.get('/usercomments')
-def getUserComments(request:Request) -> JSONResponse:
-  session = sessions.get_session(request)
-  if len(session) > 0 and session.get('logged_in'):
-    session = sessions.get_session(request)
-    username = session['username']
-    comments = airbagdb.select_user_comments(username)
-    return comments
-  else:
-    return RedirectResponse(url="/login", status_code=302)
   
-
-@app.get('/comments/{project_id}')
-def getProjectComments(project_id:int,request:Request) -> JSONResponse:
-  comments = airbagdb.select_idea_comments(project_id)
-  return comments
-  
-@app.get('/comments/{project_id}/user')
-def getUserCommentsForProject(project_id:int, request:Request) -> JSONResponse:
+@app.get('/airbags/user')
+def getUserAirbags(request:Request) -> JSONResponse:
   session = sessions.get_session(request)
   username = session['username']
-  comments = airbagdb.select_user_idea_comments(project_id, username)
+  comments = airbagdb.select_user_airbags(username)
   return comments
 
-@app.post('/addComment')
-def addComment(comment:NewComment,request:Request) -> dict:
+@app.post('/addAirbag')
+def addComment(airbag:NewAirbag ,request:Request) -> dict:
   session = sessions.get_session(request)
   username = session['username']
-  if(airbagdb.create_comment(comment.project_id, username, comment.comment)):
-    return {'message': 'Comment created!', 'changed' : True}
+  if(airbagdb.register_airbag(username, airbag.battery, airbag.pressurized)):
+    return {'message': 'Airbag added!', 'changed' : True}
   else:
     return {'message': 'Something went wrong...', 'changed' : False}
 
-@app.post('/updateComment')
-def editComment(comment:OldComment, request:Request) -> dict:
-  if(airbagdb.update_user_comment(comment.comment_id, comment.comment)):
-    return {'message': 'Comment updated!', 'changed' : True}
+@app.post('/updateAirbag')
+def editComment(airbag:UpdateBattery, request:Request) -> dict:
+  if(airbagdb.update_airbag_battery(airbag.airbag_id, airbag.battery)):
+    return {'message': 'Airbag updated!', 'changed' : True}
   else:
     return {'message': 'Something went wrong...', 'changed' : False}
 
-@app.delete('/deleteComment')
-def deleteComment(comment:OldComment, request:Request) -> dict:
-  if(airbagdb.delete_comment(comment.comment_id)):
-    return {'message': 'Comment deleted!', 'changed' : True}
+@app.delete('/deleteAirbag')
+def deleteComment(airbag:AirbagRequester, request:Request) -> dict:
+  if(airbagdb.delete_airbag(airbag.airbag_id)):
+    return {'message': 'Airbag deleted!', 'changed' : True}
   else:
     return {'message': 'Something went wrong...', 'changed' : False}
+  
+  #update/add more users to airbag
 #######################################
 ##########       Logout      ##########
 #######################################

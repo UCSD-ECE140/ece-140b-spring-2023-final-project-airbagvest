@@ -20,88 +20,99 @@ session_config = {
 ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 # Define helper functions for CRUD operations
 # CREATE SQL query
-def create_comment(project_id:int, username:str, comment:str) -> int:
+def register_airbag(username:str, battery:str, pressurized:bool) -> int:
   db = mysql.connect(**db_config)
   cursor = db.cursor()
-  query = "insert into comments (project_id, username, comment) values (%s, %s, %s)"
-  values = (project_id, username, comment)
+  query = "insert into airbags (username, battery, pressurized) values (%s, %s, %s)"
+  values = (username, battery, pressurized)
   cursor.execute(query, values)
   db.commit()
   db.close()
   return cursor.lastrowid
 
 # SELECT SQL query
-def select_comments(comment_id:int=None) -> list:
+def select_airbags(airbag_id:int=None) -> list:
   db = mysql.connect(**db_config)
   cursor = db.cursor()
-  if comment_id == None:
-    query = f"select comment_id, project_id, username, comment from comments;"
+  if airbag_id == None:
+    query = f"select airbag_id, username, battery, pressurized from airbags;"
     cursor.execute(query)
     result = cursor.fetchall()
   else:
-    query = f"select comment_id, project_id, username, comment from comments where comment_id={comment_id};"
+    query = f"select airbag_id, username, battery, pressurized from airbags where airbag_id={airbag_id};"
     cursor.execute(query)
     result = cursor.fetchone()
   db.close()
   return result
 
 # SELECT SQL query
-def select_user_comments(username:str) -> list:
+def select_user_airbags(username:str) -> list:
   db = mysql.connect(**db_config)
   cursor = db.cursor()
-  query = f"select comment_id, project_id, comment from comments where username= \"{username}\";"
-  cursor.execute(query)
-  result = cursor.fetchall()
-  db.close()
-  return result
-
-# SELECT SQL query
-def select_idea_comments(project_id:int) -> list:
-  db = mysql.connect(**db_config)
-  cursor = db.cursor()
-  query = f"select comment_id, project_id, comment from comments where project_id={project_id};"
-  cursor.execute(query)
-  result = cursor.fetchall()
-  db.close()
-  return result
-
-# SELECT SQL query
-def select_user_idea_comments(project_id:int, username:str) -> list:
-  db = mysql.connect(**db_config)
-  cursor = db.cursor()
-  query = f"select comment, comment_id from comments where username = \"{username}\" and project_id={project_id};"
+  query = f"select airbag_id, battery, pressurized from airbags where username= \"{username}\";"
   cursor.execute(query)
   result = cursor.fetchall()
   db.close()
   return result
 
 # UPDATE SQL query
-def update_comment(comment_id:int, project_id:int, username:str, comment:str) -> bool:
+def update_airbags(airbag_id:int, username:str, battery:str, pressurized:bool) -> bool:
   db = mysql.connect(**db_config)
   cursor = db.cursor()
-  query = "update comments set project_id=%s, username=%s, comment=%s, where comment_id=%s;"
-  values = (project_id, username, comment, comment_id)
+  query = "update airbags set username=%s, battery=%s, pressurized=%s, where airbag_id=%s;"
+  values = (username, battery, pressurized, airbag_id)
   cursor.execute(query, values)
   db.commit()
   db.close()
   return True if cursor.rowcount == 1 else False
 
 # UPDATE SQL query
-def update_user_comment(comment_id:int, comment:str) -> bool:
+def update_airbag_battery(airbag_id:int, battery:int) -> bool:
   db = mysql.connect(**db_config)
   cursor = db.cursor()
-  query = "update comments set comment=%s where comment_id=%s;"
-  values = (comment, comment_id)
+  query = "update airbags set battery=%s where airbag_id=%s;"
+  values = (battery, airbag_id)
+  cursor.execute(query, values)
+  db.commit()
+  db.close()
+  return True if cursor.rowcount == 1 else False
+
+# UPDATE SQL query
+def update_airbag_pressure(airbag_id:int, pressure:bool) -> bool:
+  db = mysql.connect(**db_config)
+  cursor = db.cursor()
+  query = "update airbags set pressurized=%s where airbag_id=%s;"
+  values = (pressure, airbag_id)
+  cursor.execute(query, values)
+  db.commit()
+  db.close()
+  return True if cursor.rowcount == 1 else False
+
+# UPDATE SQL query
+def update_airbag_user(airbag_id:int, username:bool) -> bool:
+  db = mysql.connect(**db_config)
+  cursor = db.cursor()
+  query = "update airbags set username=%s where airbag_id=%s;"
+  values = (username, airbag_id)
   cursor.execute(query, values)
   db.commit()
   db.close()
   return True if cursor.rowcount == 1 else False
 
 # DELETE SQL query
-def delete_comment(comment_id:int) -> bool:
+def delete_airbag(airbag_id:int) -> bool:
   db = mysql.connect(**db_config)
   cursor = db.cursor()
-  cursor.execute(f"delete from comments where comment_id={comment_id};")
+  cursor.execute(f"delete from airbags where airbag_id={airbag_id};")
+  db.commit()
+  db.close()
+  return True if cursor.rowcount == 1 else False
+
+# DELETE SQL query
+def delete_airbag(airbag_id:int) -> bool:
+  db = mysql.connect(**db_config)
+  cursor = db.cursor()
+  cursor.execute(f"delete from airbags where airbag_id={airbag_id};")
   db.commit()
   db.close()
   return True if cursor.rowcount == 1 else False

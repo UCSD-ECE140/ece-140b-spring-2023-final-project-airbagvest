@@ -24,7 +24,7 @@ cursor.execute("drop table if exists users;")
 cursor.execute("drop table if exists sessions;")
 cursor.execute("drop table if exists airbags;")
 ##############################################################################
-try:
+try: # TODO UPDATE ALL TO REMOVE STUDENT ID
    cursor.execute("""
    create table if not exists users (
       id         integer auto_increment primary key,
@@ -56,10 +56,10 @@ except RuntimeError as err:
 try:
    cursor.execute("""
    create table if not exists airbags (
-      comment_id integer auto_increment primary key,
-      project_id integer not null,
-      username varchar(64) not null,
-      comment varchar(200) not null,
+      airbag_id integer auto_increment primary key,
+      username integer not null,
+      battery integer not null,
+      pressurized BIT not null,
       created_at timestamp not null default current_timestamp
    );
  """)
