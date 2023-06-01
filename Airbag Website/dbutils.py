@@ -21,13 +21,13 @@ session_config = {
 ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 # Define helper functions for CRUD operations
 # CREATE SQL query
-def create_user(first_name:str, last_name:str, student_id:str, email:str, username:str, password:str) -> int:
+def create_user(first_name:str, last_name:str, email:str, username:str, password:str) -> int:
   password = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt())
 
   db = mysql.connect(**db_config)
   cursor = db.cursor()
-  query = "insert into users (first_name, last_name, student_id, email, username, password) values (%s, %s, %s, %s, %s, %s)"
-  values = (first_name, last_name, student_id, email, username, password)
+  query = "insert into users (first_name, last_name, email, username, password) values (%s, %s, %s, %s, %s)"
+  values = (first_name, last_name, email, username, password)
   cursor.execute(query, values)
   db.commit()
   db.close()
@@ -49,22 +49,22 @@ def select_users(user_id:int=None) -> list:
   return result
 
 # UPDATE SQL query
-def update_user(user_id:int, first_name:str, last_name:str, student_id:str, email:str, username:str, password:str) -> bool:
+def update_user(user_id:int, first_name:str, last_name:str, email:str, username:str, password:str) -> bool:
   password = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt())
   db = mysql.connect(**db_config)
   cursor = db.cursor()
-  query = "update users set first_name=%s, last_name=%s, student_id = %s, email = %s, username=%s, password=%s where id=%s;"
-  values = (first_name, last_name, student_id, email, username, password, user_id)
+  query = "update users set first_name=%s, last_name=%s, email = %s, username=%s, password=%s where id=%s;"
+  values = (first_name, last_name, email, username, password, user_id)
   cursor.execute(query, values)
   db.commit()
   db.close()
   return True if cursor.rowcount == 1 else False
 
 # UPDATE SQL query
-def update_user_with_email(current_studentid:str, first_name:str, last_name:str, student_id:str, email:str, username:str, password:str) -> bool:
+def update_user_with_password(current_password:str, first_name:str, last_name:str, email:str, username:str, password:str) -> bool:
   db = mysql.connect(**db_config)
   cursor = db.cursor()
-  query = f"select id, first_name, last_name, email, username from users where student_id={current_studentid};"
+  query = f"select id, first_name, last_name, email from users where password={current_password};"
   cursor.execute(query)
   result = cursor.fetchone()
   if result is None:
@@ -73,22 +73,20 @@ def update_user_with_email(current_studentid:str, first_name:str, last_name:str,
     first_name = result[1]
   if last_name == "":
     last_name = result[2]
-  if student_id == "":
-    student_id = current_studentid
   if email == "":
     email = result[3]
   if username == "":
     username = result[4]
   query = ""
   values = ("","")
-  student_id = int(student_id)
+  current_password = bcrypt.hashpw(current_password.encode('utf-8'), bcrypt.gensalt())
   if password == "":
-    query = "update users set first_name=%s, last_name=%s, student_id = %s, email = %s, username=%s where student_id=%s;"
-    values = (first_name, last_name, student_id, email, username, current_studentid)
+    query = "update users set first_name=%s, last_name=%s, email = %s, username=%s where password=%s;"
+    values = (first_name, last_name, email, username, current_password)
   else:
-    query = "update users set first_name=%s, last_name=%s, student_id = %s, email = %s, username=%s, password=%s where student_id=%s;"
+    query = "update users set first_name=%s, last_name=%s, email = %s, username=%s, password=%s where password=%s;"
     password = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt())
-    values = (first_name, last_name, student_id, email, username, password, current_studentid)
+    values = (first_name, last_name, email, username, password, current_password)
   
   cursor.execute(query, values)
   db.commit()
@@ -96,6 +94,7 @@ def update_user_with_email(current_studentid:str, first_name:str, last_name:str,
   return True if cursor.rowcount == 1 else False
 
 # UPDATE SQL query
+# UNUSED
 def update_user_password(email:str, password:str) -> bool:
   password = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt())
   db = mysql.connect(**db_config)

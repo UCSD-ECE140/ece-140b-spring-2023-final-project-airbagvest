@@ -17,17 +17,12 @@
           </td>
           <td>
             <button class="link"> <a href="/profile">
-              User Profile
+              User Settings
             </a> </button>
           </td>
           <td>
-            <button class="link"> <a href="/mvp">
-              MVP Updates
-            </a> </button>
-          </td> 
-          <td>
-            <button class="link"> <a href="/leaderboard">
-              Leaderboard
+            <button class="link"> <a href="/jacket">
+              My Jackets
             </a> </button>
           </td>
           <td>
@@ -40,14 +35,13 @@
       </div>
 
     <main class='container' data-mode='viewing'>
-      <h1>Need to change your username, password, or name?</h1>
+      <h1>Need to change your username, password, or name? (Just fill what you want to change!)</h1>
       <div class='edit_view'>
         <form name='edit_user' action='/profile' method='POST'>
           <div class='form_row'>
-            <input type='text' name='current_studentID' pattern="[0-9]{8}" placeholder='Current Student ID' autofocus required>
+            <input type='text' name='current_password' pattern="[0-9]{8}" placeholder='Current Password' autofocus required>
             <input type='text' name='first_name' placeholder='New First Name'>
             <input type='text' name='last_name' placeholder='New Last Name'>
-            <input name="student_id" id="id" pattern="[0-9]{8}" placeholder='New Student ID'> </input>
             <input name="email" id="email"  pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$" placeholder='New Email'> </input>
             <input name="username" type="text" max = 64 id="username" placeholder='New Username'> </input>
             <p></p>

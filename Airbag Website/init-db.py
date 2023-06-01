@@ -30,7 +30,6 @@ try: # TODO UPDATE ALL TO REMOVE STUDENT ID
       id         integer auto_increment primary key,
       first_name varchar(64) not null,
       last_name  varchar(64) not null,
-      student_id integer not null unique,
       email      varchar(64) not null unique,
       username   varchar(64) not null unique,
       password   varchar(64) not null,
@@ -57,7 +56,7 @@ try:
    cursor.execute("""
    create table if not exists airbags (
       airbag_id integer auto_increment primary key,
-      username integer not null,
+      username varchar(64) not null,
       battery integer not null,
       pressurized BIT not null,
       created_at timestamp not null default current_timestamp
@@ -68,12 +67,12 @@ except RuntimeError as err:
 
 # Collection of users with plain-text passwords – BIG NONO! NEVER EVER DO THIS!!!
 users = [
-  {'first_name':'Zendaya', 'last_name':'',          'student_id': '00000000', 'email': 'a@wow.com',   'username': 'ZD123',   'password': 'abc123'},
-  {'first_name':'Tom',     'last_name':'Holland',   'student_id': '00000001', 'email': 'a@epic.com',  'username': 'tommy',   'password': 'abc123'},
-  {'first_name':'Tobey',   'last_name':'Maguire',   'student_id': '00000002', 'email': 'a@crazy.com',   'username': 'tobes',   'password': 'abc123'},
-  {'first_name':'Andrew',  'last_name':'Garfield',  'student_id': '00000003', 'email': 'a@impossible.com',   'username': 'drewie',  'password': 'abc123'},
-  {'first_name':'Rick',    'last_name':'Gessner',   'student_id': '00000004', 'email': 'a@now.com',   'username': 'rickg',   'password': 'drowssap'},
-  {'first_name':'Ramsin',  'last_name':'Khoshabeh', 'student_id': '00000005', 'email': 'a@die.com',   'username': 'ramujin', 'password': 'password'}
+  {'first_name':'Zendaya', 'last_name':'', 'email': 'a@wow.com',   'username': 'ZD123',   'password': 'abc123'},
+  {'first_name':'Tom',     'last_name':'Holland', 'email': 'a@epic.com',  'username': 'tommy',   'password': 'abc123'},
+  {'first_name':'Tobey',   'last_name':'Maguire', 'email': 'a@crazy.com',   'username': 'tobes',   'password': 'abc123'},
+  {'first_name':'Andrew',  'last_name':'Garfield', 'email': 'a@impossible.com',   'username': 'drewie',  'password': 'abc123'},
+  {'first_name':'Rick',    'last_name':'Gessner', 'email': 'a@now.com',   'username': 'rickg',   'password': 'drowssap'},
+  {'first_name':'Ramsin',  'last_name':'Khoshabeh', 'email': 'a@die.com',   'username': 'ramujin', 'password': 'password'}
 ]
 
 ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
@@ -85,10 +84,13 @@ pwd_salt = bcrypt.gensalt()
 # Insert every user with a salted and hashed password
 for user in users:
   pwd = bcrypt.hashpw(user['password'].encode('utf-8'), pwd_salt)
-  query = 'insert into users (first_name, last_name, student_id, email, username, password) values (%s, %s, %s, %s, %s, %s)'
-  values = (user['first_name'], user['last_name'], user['student_id'], user['email'], user['username'], pwd)
+  query = 'insert into users (first_name, last_name, email, username, password) values (%s, %s, %s, %s, %s)'
+  values = (user['first_name'], user['last_name'], user['email'], user['username'], pwd)
   cursor.execute(query, values)
 
+query = 'insert into airbags (username, battery, pressurized) values (%s, %s, %s)'
+values = ('tommy', '100', True)
+cursor.execute(query, values)
 # Commit the changes and close the connection
 db.commit()
 cursor.close()

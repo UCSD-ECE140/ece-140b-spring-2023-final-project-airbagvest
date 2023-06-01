@@ -41,44 +41,6 @@ document.addEventListener("DOMContentLoaded", () => {
       });
     });
   }
-  /*************************************
-                MVP Page
-   *************************************/
-  var currentWeek = 1;
-
-  // Handle left button
-  let left_button = document.querySelector('#left_button');
-  if (left_button) { // in case we are not on the login page
-    left_button.addEventListener('click', (event) => {
-      // Submit the POST request
-      var idFirst = "#Week" + currentWeek;
-      document.querySelector(`${idFirst}`).style.display = "none";
-      currentWeek -= 1;
-      if (currentWeek <= 0) {
-        currentWeek = 1;
-      }
-      var idSecond = "#Week" + currentWeek;
-      document.querySelector(`${idSecond}`).style.display = "block";
-    });
-  }
-
-  // Handle right button
-  let right_button = document.querySelector('#right_button');
-  if (right_button) { // in case we are not on the login page
-    right_button.addEventListener('click', (event) => {
-      // Submit the POST request
-      var idFirst = "#Week" + currentWeek;
-      disappearWeek = document.querySelector(`${idFirst}`);
-      disappearWeek.style.display = "none";
-      currentWeek += 1;
-      if (currentWeek >= 4) {
-        currentWeek = 3;
-      }
-      var idSecond = "#Week" + currentWeek;
-      appear = document.querySelector(`${idSecond}`);
-      appear.style.display = "block";
-    });
-  }
 
   /*************************************
           Logout (across all pages)

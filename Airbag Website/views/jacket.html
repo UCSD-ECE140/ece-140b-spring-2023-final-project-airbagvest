@@ -1,52 +1,64 @@
 <!DOCTYPE html>
 <html>
-  <head>
-    <title>Class Leaderboard</title>
-    <link rel="icon" type="image/x-icon" href="/public/favicon.ico">
-    <link rel="stylesheet" href="/public/main.css">
-    <script src="public/leaderboard.js"></script>
-  </head>
-  <body>
-    <div class = "heading">
-      <table>
-        <tr>
-          <td>
-            <button class="link logo"> <a href="/">
+
+<head>
+  <title>My Jackets</title>
+  <link rel="icon" type="image/x-icon" href="/public/favicon.ico">
+  <link rel="stylesheet" href="/public/main.css">
+  <script src="public/jacket.js"></script>
+</head>
+
+<body>
+  <div class="heading">
+    <table>
+      <tr>
+        <td>
+          <button class="link logo"> <a href="/">
               <img src="/public/favicon.ico" alt="Home" style="width:42px;height:42px;">
             </a> </button>
-          </td>
-          <td>
-            <button class="link"> <a href="/profile">
-              User Profile
+        </td>
+        <td>
+          <button class="link"> <a href="/profile">
+              User Settings
             </a> </button>
-          </td>
-          <td>
-            <button class="link"> <a href="/mvp">
-              MVP Updates
+        </td>
+        <td>
+          <button class="link"> <a href="/jacket">
+              My Jackets
             </a> </button>
-          </td> 
-          <td>
-            <button class="link"> <a href="/leaderboard">
-              Leaderboard
-            </a> </button>
-          </td>
-          <td>
-            <button class="link logout_button">
-              Logout
-            </button>
-          </td>
-        </tr>
-      </table>
-      </div>
+        </td>
+        <td>
+          <button class="link logout_button">
+            Logout
+          </button>
+        </td>
+      </tr>
+    </table>
+  </div>
 
-      <u><h2>Leaderboard</h2></u>
-      <div id = "lcontain" class = "grid">
-  
-      </div>
+  <u>
+    <center>
+    <h2 class="heading">Jackets</h2>
+    </center>
+  </u>
+  <div id="lcontain" class="grid">
 
-      <u><h2>Comments</h2></u>
-      <div id = "ccontain" class = "grid">
-  </body>
+  </div>
+
+  <u>
+    <center>
+    <h2 class="heading">Extra Details</h2>
+    </center>
+  </u>
+    
+  <div id = "ccontain" class = "grid">
+
+  </div>
+
+  <!-- Add airbag ID system (hardware included)-->
+  <form id="add_form" name="add_form" action="http://localhost:6543/addAirbag" method="POST">
+    <h2>Add a new jacket!</h2>
+    <input class="link" value="Add" type="submit"></input>
+  </form>
+</body>
 </html>
-
-  

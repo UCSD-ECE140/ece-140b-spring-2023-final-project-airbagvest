@@ -49,7 +49,7 @@ class PasswordForgetter(BaseModel):
 
 # Define a User class that matches the SQL schema we defined for our users
 class RewriteUser(BaseModel): # TODO use different unique identifier for password reset
-  current_studentID: str
+  current_password: str
   first_name: str = ""
   last_name: str = ""
   email: str = ""
@@ -59,12 +59,11 @@ class RewriteUser(BaseModel): # TODO use different unique identifier for passwor
 # Define a User class that matches the SQL schema we defined for our users
 class NewAirbag(BaseModel):
   battery: int
-  pressurized: int
+  pressurized: bool
 
 # Define a User class that matches the SQL schema we defined for our users
 class AirbagRequester(BaseModel):
   airbag_id: int
-  username: str = ""
 
 # Define a User class that matches the SQL schema we defined for our users
 class UpdateBattery(BaseModel):
@@ -73,7 +72,7 @@ class UpdateBattery(BaseModel):
 
 # Define a User class that matches the SQL schema we defined for our users
 class UpdatePressurized(BaseModel):
-  pressurized: int
+  pressurized: bool
   airbag_id: int
 
 # Define a User class that matches the SQL schema we defined for our users
@@ -145,7 +144,7 @@ def post_register(user:User, request:Request, response:Response) -> dict:
   if len(session) > 0:
     sessions.end_session(request, response)
 
-  db.create_user(user.first_name, user.last_name, user.student_id, user.email, user.username,user.password)
+  db.create_user(user.first_name, user.last_name, user.email, user.username,user.password)
   # Authenticate the user
   if authenticate_user(username, password):
     session_data = {'username': username, 'logged_in': True}
@@ -164,7 +163,7 @@ def post_register(user:User, request:Request, response:Response) -> dict:
 def get_login(request:Request) -> HTMLResponse:
     session = sessions.get_session(request)
     if len(session) > 0 and session.get('logged_in'):
-        return RedirectResponse(url="/profile", status_code=302)
+        return RedirectResponse(url="/jacket", status_code=302)
     else:
       with open(os.path.dirname(__file__) +"/views/login.html") as html:
         return HTMLResponse(content=html.read())
@@ -194,14 +193,14 @@ def post_login(visitor:Visitor, request:Request, response:Response) -> dict:
 
 @app.post('/profile')
 def post_profile(user:RewriteUser, request:Request, response:Response) -> dict:
-  current_studentID = user.current_studentID
+  current_password = user.current_password
   newFirst = user.first_name  
   newLast = user.last_name
-  newID = user.student_id
+  newID = user.password
   newEmail = user.email
   newUsername = user.username
   newPassword = user.password
-  if (db.update_user_with_email(current_studentID, newFirst, newLast, newID, newEmail, newUsername, newPassword)):
+  if (db.update_user_with_password(current_password, newFirst, newLast, newID, newEmail, newUsername, newPassword)):
     return {'message': 'Data change successful!', 'changed' : True}
   else:
     return {'message': 'Invalid student ID or same data as before...', 'changed' : False}
@@ -233,7 +232,7 @@ def addComment(airbag:NewAirbag ,request:Request) -> dict:
   session = sessions.get_session(request)
   username = session['username']
   if(airbagdb.register_airbag(username, airbag.battery, airbag.pressurized)):
-    return {'message': 'Airbag added!', 'changed' : True}
+    return {'message': 'Airbag added!', 'changed' : True, }
   else:
     return {'message': 'Something went wrong...', 'changed' : False}
 

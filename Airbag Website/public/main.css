@@ -1,32 +1,22 @@
 /* How to specify HTML tags */
 body {
-    background: #37392E;
-    color: #94DCBE;
+    background: #0B132B;
+    color: #5BC0BE;
 }
 
 a{
-    color: #CEA0AE;
+    color: #5BC0BE;
     font-size: larger;
 }
 
-
+button{
+    color: #5BC0BE
+}
 .hSpacer{
     min-width:200px;
 }
 .vSpacer{
     min-height:200px;
-}
-
-.giveGradient{
-    background-image: linear-gradient(
-    to bottom,
-    rgba(55, 57, 46, .5),
-    rgba(255, 173, 50, 0.75)
-    );
-    text-decoration-line: 
-    underline;
-    min-width: 10%;
-    max-width: 30%;
 }
 
 .biggerGradient{
@@ -38,18 +28,16 @@ a{
     border-color: #7772B6;
     font-size: x-large;
     font-weight: bold;
-    padding:13px;   
+    padding:13px;
     min-width:10px;
     min-height:10px;
     display:auto;
 }
 
 .heading{
-    background-image: url("1.png");
     background-repeat: repeat-x;
     font-size: xx-large;
     font-weight: bold;
-    padding:1px; 
 }
 
 .tblSec{
@@ -62,9 +50,10 @@ a{
 }
 
 .link{
-    background-color: #945D5E;
+    background-color: #3A506B;
     font-family: Ubuntu;
     border-color: #7772B6;
+    color: #5BC0BE;
     padding:13px;
     min-width:100px;
     min-height:72px;

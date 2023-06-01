@@ -28,13 +28,11 @@
     <form action="/register" method="POST" id = "register" name="register_form">
       <input type='text' name='first_name' placeholder='First Name' autofocus required>
       <input type='text' name='last_name' placeholder='Last Name' required>
-      <input name="student_id" id="id" pattern="[0-9]{8}" placeholder='Student ID (numbers only)'required> </input>
       <input name="email" id="email"  pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$" placeholder='Email' required> </input>
       <input name="username" type="text" max = 64 id="customerName" placeholder='Username' required> </input>
       <p></p>
-            <label for = "password">Password must have at least one number, one capital letter, and one lowercase letter, and be 8-64 characters long. <br> </label>
+      <label for = "password">Password must have at least one number, one capital letter, and one lowercase letter, and be 8-64 characters long. <br> </label>
       <input name="password" type="password" id="passwordText" pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,64}" placeholder='Password' required> </input>
-
       <input type="submit" id="registerBtn"></input>
       </form>
 
