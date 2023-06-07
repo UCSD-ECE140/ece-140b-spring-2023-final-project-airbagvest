@@ -1,5 +1,5 @@
 # Necessary Imports
-from fastapi import FastAPI, Request, Response                  # The main FastAPI import
+from fastapi import FastAPI, Request, Response, WebSocket, WebSocketDisconnect                  # The main FastAPI import
 from fastapi.responses import HTMLResponse, JSONResponse, RedirectResponse    # Used for returning HTML and JSON responses
 from fastapi.staticfiles import StaticFiles   # Used for serving static files
 import mysql.connector as mysql
@@ -13,8 +13,31 @@ import os                                         # Used for interacting with th
 from sessiondb import Sessions
 import airbagdb
 
-''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
-# Configuration
+# Websocket Config
+data = {}
+class ConnectionManager:
+    def __init__(self):
+        self.active_connections: list[WebSocket] = []
+
+    async def connect(self, websocket: WebSocket):
+        await websocket.accept()
+        self.active_connections.append(websocket)
+
+    def disconnect(self, websocket: WebSocket):
+        self.active_connections.remove(websocket)
+
+    async def send_personal_message(self, message: str, websocket: WebSocket):
+        await websocket.send_text(message)
+
+    async def broadcast(self, message: str):
+        for connection in self.active_connections:
+            await connection.send_text(message)
+manager = ConnectionManager()
+
+
+
+#Website Configuration
+
 load_dotenv(os.path.dirname(__file__) + '/credentials.env')                 # Read in the environment variables for MySQL
 db_host = os.environ['MYSQL_HOST']
 db_user = os.environ['MYSQL_USER']
@@ -80,7 +103,6 @@ class UpdateUser(BaseModel):
   username: str = ""
   airbag_id: int
 
-# Configuration
 app = FastAPI()                   # Specify the "app" that will run the routing
 # Mount the static directory
 app.mount("/public", StaticFiles(directory=os.path.dirname(__file__) + "/public"), name="public")
@@ -94,6 +116,18 @@ app.mount("/public", StaticFiles(directory=os.path.dirname(__file__) + "/public"
 def get_html() -> HTMLResponse:
     with open(os.path.dirname(__file__) + "/views/home.html") as html:
         return HTMLResponse(content=html.read())
+    
+
+@app.websocket("/ws/{client_id}")
+async def websocket_endpoint(websocket: WebSocket, client_id: int):
+    await manager.connect(websocket)
+    try:
+        while True:
+            data = await websocket.receive_text()
+            await websocket.send_text(f"{app.drone.get_vx()}, {app.drone.get_vy()}, {app.drone.get_vz()}")
+    except WebSocketDisconnect:
+        manager.disconnect(websocket)
+        await manager.broadcast(f"Client #{client_id} left the chat")
 
 #######################################
 ###       Need to be Logged in      ###
