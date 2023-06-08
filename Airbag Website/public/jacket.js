@@ -129,28 +129,6 @@ document.addEventListener("DOMContentLoaded", (event) => {
 
     });
   }
-
-  var client_id = Date.now()
-  var ws = new WebSocket(`ws://localhost:6543/ws/${client_id}`);
-  ws.onmessage = function (event) {
-    var jackets = event.data;
-    for (var i = 0; i < jackets.length; i++) {
-      for (var divs in teamViews) {
-        if (divs.querySelector(".id").innerHTML == jackets[i][0]) {
-          divs.querySelector(".battery").innerHTML = jackets[i][1];
-          divs.querySelector(".pressurized").innerHTML = jackets[i][2];
-          break;
-        }
-      }
-    }
-  };
-  jacketIDS = [];
-  ws.onopen = function (event) {
-    for (var view in teamViews) {
-      jacketIDS.push(view.querySelector(".id").innerHTML);
-    }
-    ws.send(jacketIDS.toString());
-  }
-
+  setInterval(showUserAirbags, 1000)
 });
 
