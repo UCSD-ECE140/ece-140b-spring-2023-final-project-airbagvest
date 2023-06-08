@@ -1,19 +1,65 @@
+#include <WiFi.h>
 #include <Arduino.h>
 #include <Adafruit_MPU6050.h>
 #include <Adafruit_Sensor.h>
 #include <Wire.h>
+#include "PubSubClient.h"
 
 #define DEVICE_ID 4545
 #define RELAY_PIN 33
 #define FALL_THRESHOLD -1.4
 
 Adafruit_MPU6050 mpu;
+// Replace the SSID/Password details as per your wifi router
+const char *ssid = "yourSSID";
+const char *password = "yourPassword";
 
+// Replace your MQTT Broker IP address here:
+const char *mqtt_server = "461c2f8dac1642c9b29ae68be3d90e2d.s2.eu.hivemq.cloud";
+WiFiClient espClient;
+PubSubClient client(espClient);
+long lastMsg = 0;
+
+void connect_mqttServer()
+{
+  // Loop until we're reconnected
+  while (!client.connected())
+  {
+
+    // first check if connected to wifi
+    if (WiFi.status() != WL_CONNECTED)
+    {
+      // if not connected, then first connect to wifi
+      // setup_wifi();
+    }
+
+    // Attempt to connect
+    if (client.connect("ESP32_client1"))
+    { // Change the name of client here if multiple ESP32 are connected. This should be a unique name.
+      // attempt successful
+      Serial.println("connected");
+      // Subscribe to topics here
+      client.subscribe("airbag/data");
+      // client.subscribe("rpi/xyz"); //subscribe more topics here
+    }
+    else
+    {
+      // attempt not successful
+      Serial.print("failed, rc=");
+      Serial.print(client.state());
+      Serial.println(" trying again in 2 seconds");
+
+      delay(2000);
+    }
+  }
+}
 void setup()
 {
+
   pinMode(RELAY_PIN, OUTPUT);
   Serial.begin(115200);
-
+  //setup_wifi();
+  client.setServer(mqtt_server, 1883); // 1883 is the default port for MQTT server
   if (!mpu.begin())
   {
     Serial.println("Failed to find MPU6050 chip");
@@ -51,6 +97,21 @@ void loop()
     digitalWrite(RELAY_PIN, HIGH);
     delay(500);
     digitalWrite(RELAY_PIN, LOW);
+  }
+
+  if (!client.connected())
+  {
+    connect_mqttServer();
+  }
+
+  client.loop();
+
+  long now = millis();
+  if (now - lastMsg > 4000)
+  {
+    lastMsg = now;
+
+    client.publish("airbag/data", "4545,55,True"); // topic name (to which this ESP32 publishes its data). 88 is the dummy value.
   }
 
   delay(10);

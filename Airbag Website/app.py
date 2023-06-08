@@ -24,7 +24,7 @@ db_pass = os.environ['MYSQL_PASSWORD']
 db_name = os.environ['MYSQL_DATABASE']
 # session_manager = SessionManager(secret_key="mysecretkey")
 # Use MySQL for storing session data
-sessions = Sessions(db.db_config, secret_key=db.session_config['session_key'], expiry=900)
+sessions = Sessions(db.db_config, secret_key=db.session_config['session_key'], expiry=3600)
 ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 def authenticate_user(username:str, password:str) -> bool:
   return db.check_user_password(username, password)
