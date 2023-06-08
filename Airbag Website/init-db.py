@@ -6,7 +6,7 @@ from dotenv import load_dotenv
 import bcrypt
 
 # Read Database connection variables
-load_dotenv(os.path.dirname(__file__) + "/credentials.env")
+load_dotenv('credentials.env')
 
 db_host = os.environ['MYSQL_HOST']
 db_user = os.environ['MYSQL_USER']
@@ -55,7 +55,8 @@ except RuntimeError as err:
 try:
    cursor.execute("""
    create table if not exists airbags (
-      airbag_id integer auto_increment primary key,
+      id auto_increment primary key,
+      airbag_id integer not null,
       username varchar(64) not null,
       battery integer not null,
       pressurized BIT not null,
