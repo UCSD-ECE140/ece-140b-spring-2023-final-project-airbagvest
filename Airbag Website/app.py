@@ -186,10 +186,6 @@ async def websocket_endpoint(websocket: WebSocket, client_id: int):
         manager.disconnect(websocket)
         await manager.broadcast(f"Client #{client_id} left the chat")
 
-app.on_event('shutdown')
-def shutdown():
-    client.loop_stop()
-    client.disconnect()
 #######################################
 ###       Need to be Logged in      ###
 #######################################
