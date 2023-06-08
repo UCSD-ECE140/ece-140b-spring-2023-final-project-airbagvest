@@ -22,6 +22,17 @@ document.addEventListener("DOMContentLoaded", (event) => {
   var leadContainer = document.querySelector("#lcontain");
   var addForm = document.querySelector("#add_form");
   var teamViews = [];
+  var slider = document.querySelector("#sensitity");
+  var sliderSubmit = document.querySelector("#slider-submit");
+
+  sliderSubmit.addEventListener("click", (event) => {
+    let slide_value = parseInt(slider.value)
+    console.log(slide_value);
+    data = {val: slide_value}
+    server_request("slider-update", data, "POST", (response) => {})
+  });
+
+
 
   addForm.addEventListener('submit', (event) => {
     // Stop the default form behavior
