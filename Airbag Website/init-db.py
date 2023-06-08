@@ -55,7 +55,7 @@ except RuntimeError as err:
 try:
    cursor.execute("""
    create table if not exists airbags (
-      id auto_increment primary key,
+      airbag_id integer unique primary key,
       airbag_id integer not null,
       username varchar(64) not null,
       battery integer not null,
