@@ -118,6 +118,6 @@ document.addEventListener("DOMContentLoaded", (event) => {
 
     });
   }
-  setInterval(showUserAirbags, 1000)
+  setInterval(showUserAirbags, 2000)
 });
 

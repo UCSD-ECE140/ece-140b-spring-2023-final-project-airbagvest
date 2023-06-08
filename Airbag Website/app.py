@@ -8,15 +8,12 @@ import uvicorn                                # Used for running the app
 import dbutils as db                              # Import helper module of database functions!
 from pydantic import BaseModel
 from fastapi.templating import Jinja2Templates    # Used for generating HTML from templatized files
-import bcrypt
 import os                                         # Used for interacting with the system environment
 from sessiondb import Sessions
 import airbagdb
 import mqttComms
 import paho.mqtt.client as paho
 from paho import mqtt
-import time
-import json
 from multiprocessing import Process
 
 #Website Configuration
@@ -126,7 +123,8 @@ def mqttStart():
   client.on_publish = mqttComms.on_publish
 
   # subscribe to all topics of encyclopedia by using the wildcard "#"
-  client.subscribe("airbag/#", qos=1)
+  client.subscribe("airbag/data", qos=1)
+  
   # loop_forever for simplicity, here you need to stop the loop manually
   # you can also use loop_start and loop_stop
   client.loop_forever()

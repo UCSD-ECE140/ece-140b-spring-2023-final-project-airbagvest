@@ -18,7 +18,7 @@ db =mysql.connect(user=db_user, password=db_pass, host=db_host)
 cursor = db.cursor()
 cursor.execute("use airbagJacket;")
 query = "update airbags set battery=%s, pressurized=%s where airbag_id=%s;"
-values = ('80', True, 4545)
+values = ('30', True, 4545)
 cursor.execute(query, values)
 # Commit the changes and close the connection
 db.commit()
