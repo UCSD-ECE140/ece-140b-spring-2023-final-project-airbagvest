@@ -29,7 +29,9 @@ document.addEventListener("DOMContentLoaded", (event) => {
     // Grab the needed form fields
     const action = addForm.getAttribute('action');
     const method = addForm.getAttribute('method');
+    formName = addForm.querySelector("#name").innerHTML;
     var data = {
+      "airbag_id": formName,
       "battery": 100,
       "pressurized": false
     }

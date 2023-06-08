@@ -83,6 +83,7 @@ class RewriteUser(BaseModel): # TODO use different unique identifier for passwor
 
 # Define a User class that matches the SQL schema we defined for our users
 class NewAirbag(BaseModel):
+  airbag_id: int
   battery: int
   pressurized: bool
 
@@ -116,7 +117,6 @@ def on_message(client, userdata, msg):
     print(msg.topic + " " + str(msg.qos) + " " + str(msg.payload))
     data = msg.payload.split(',')
     airbagdb.update_airbag(data[0], data[1], data[2])
-    message = str(msg.payload)
 
 #######################################
 ###       MQTT startup              ###

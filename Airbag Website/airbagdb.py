@@ -20,7 +20,7 @@ session_config = {
 ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 # Define helper functions for CRUD operations
 # CREATE SQL query
-def register_airbag(username:str, battery:str, pressurized:bool) -> int:
+def register_airbag(airbag_id:int, username:str, battery:str, pressurized:bool) -> int:
   db = mysql.connect(**db_config)
   cursor = db.cursor()
   query = "insert into airbags (airbag_id, username, battery, pressurized) values (%s, %s, %s, %s)"
@@ -107,13 +107,3 @@ def delete_airbag(airbag_id:int) -> bool:
   db.commit()
   db.close()
   return True if cursor.rowcount == 1 else False
-
-# DELETE SQL query
-def delete_airbag(airbag_id:int) -> bool:
-  db = mysql.connect(**db_config)
-  cursor = db.cursor()
-  cursor.execute(f"delete from airbags where airbag_id={airbag_id};")
-  db.commit()
-  db.close()
-  return True if cursor.rowcount == 1 else False
-
