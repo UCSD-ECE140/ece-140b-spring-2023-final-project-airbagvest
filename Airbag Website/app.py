@@ -106,6 +106,9 @@ class UpdateUser(BaseModel):
   username: str = ""
   airbag_id: int
 
+class SliderValue(BaseModel):
+  val: int
+
 # print message, useful for checking if it was successful
 def on_message(client, userdata, msg):
     """
@@ -369,6 +372,10 @@ def get_protected(request:Request) -> dict:
 @app.get('/sessions')
 def get_sessions(request:Request) -> dict:
   return sessions.get_session(request)
+
+@app.post("/slider-update")
+def slider_update(slider: SliderValue):
+  print(slider.val)
 
 
 if __name__ == "__main__":
