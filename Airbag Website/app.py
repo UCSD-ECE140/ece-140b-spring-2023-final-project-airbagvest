@@ -17,6 +17,7 @@ import paho.mqtt.client as paho
 from paho import mqtt
 import time
 import json
+from multiprocessing import Process
 # Websocket Config
 data = {}
 class ConnectionManager:
@@ -117,6 +118,41 @@ def on_message(client, userdata, msg):
     airbagdb.update_airbag(data[0], data[1], data[2])
     message = str(msg.payload)
 
+#######################################
+###       MQTT startup              ###
+#######################################
+def mqttStart():
+  client = paho.Client(client_id="", userdata=None, protocol=paho.MQTTv5)
+  # using MQTT version 5 here, for 3.1.1: MQTTv311, 3.1: MQTTv31
+  # userdata is user defined data of any type, updated by user_data_set()
+  # client_id is the given name of the client
+  client.on_connect = mqttComms.on_sub_connect
+
+
+  # enable TLS for secure connection
+  client.tls_set(tls_version=mqtt.client.ssl.PROTOCOL_TLS)
+  # set username and password
+  username = "airbagjacket"
+  password = "a11n3wp4nt5"
+  url = "461c2f8dac1642c9b29ae68be3d90e2d.s2.eu.hivemq.cloud"
+  client.username_pw_set(username, password)
+  # connect to HiveMQ Cloud on port 8883 (default for MQTT)
+  client.connect(url, 8883)
+
+  # setting callbacks, use separate functions like above for better visibility
+  client.on_subscribe = mqttComms.on_subscribe
+  client.on_message = on_message
+  client.on_publish = mqttComms.on_publish
+
+  # subscribe to all topics of encyclopedia by using the wildcard "#"
+  client.subscribe("airbag/#", qos=1)
+
+
+  # loop_forever for simplicity, here you need to stop the loop manually
+  # you can also use loop_start and loop_stop
+  client.loop_forever()
+
+
 app = FastAPI()                   # Specify the "app" that will run the routing
 # Mount the static directory
 app.mount("/public", StaticFiles(directory=os.path.dirname(__file__) + "/public"), name="public")
@@ -152,45 +188,6 @@ async def websocket_endpoint(websocket: WebSocket, client_id: int):
 
 
 
-#######################################
-###       MQTT startup              ###
-#######################################
-client = paho.Client(client_id="", userdata=None, protocol=paho.MQTTv5)
-@app.on_event('startup')
-async def startup():
-    # using MQTT version 5 here, for 3.1.1: MQTTv311, 3.1: MQTTv31
-    # userdata is user defined data of any type, updated by user_data_set()
-    # client_id is the given name of the client
-    client.on_connect = mqttComms.on_sub_connect
-
-
-    # enable TLS for secure connection
-    client.tls_set(tls_version=mqtt.client.ssl.PROTOCOL_TLS)
-    # set username and password
-    username = "airbagjacket"
-    password = "a11n3wp4nt5"
-    url = "461c2f8dac1642c9b29ae68be3d90e2d.s2.eu.hivemq.cloud"
-    client.username_pw_set(username, password)
-    # connect to HiveMQ Cloud on port 8883 (default for MQTT)
-    client.connect(url, 8883)
-    
-    # setting callbacks, use separate functions like above for better visibility
-    client.on_subscribe = mqttComms.on_subscribe
-    client.on_message = on_message
-    client.on_publish = mqttComms.on_publish
-
-    # subscribe to all topics of encyclopedia by using the wildcard "#"
-    client.subscribe("airbag/#", qos=1)
-
-
-    # loop_forever for simplicity, here you need to stop the loop manually
-    # you can also use loop_start and loop_stop
-    client.loop_forever()
-
-app.on_event('shutdown')
-def shutdown():
-    client.loop_stop()
-    client.disconnect()
 #######################################
 ###       Need to be Logged in      ###
 #######################################
@@ -375,4 +372,6 @@ def get_sessions(request:Request) -> dict:
 
 
 if __name__ == "__main__":
+    p = Process(target=mqttStart)
+    p.start()
     uvicorn.run(app, host="0.0.0.0", port=6543)
