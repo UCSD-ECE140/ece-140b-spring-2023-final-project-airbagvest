@@ -18,26 +18,6 @@ from paho import mqtt
 import time
 import json
 from multiprocessing import Process
-# Websocket Config
-data = {}
-class ConnectionManager:
-    def __init__(self):
-        self.active_connections: list[WebSocket] = []
-
-    async def connect(self, websocket: WebSocket):
-        await websocket.accept()
-        self.active_connections.append(websocket)
-
-    def disconnect(self, websocket: WebSocket):
-        self.active_connections.remove(websocket)
-
-    async def send_personal_message(self, message: str, websocket: WebSocket):
-        await websocket.send_text(message)
-
-    async def broadcast(self, message: str):
-        for connection in self.active_connections:
-            await connection.send_text(message)
-manager = ConnectionManager()
 
 #Website Configuration
 load_dotenv(os.path.dirname(__file__) + '/credentials.env')                 # Read in the environment variables for MySQL
@@ -121,8 +101,9 @@ def on_message(client, userdata, msg):
 #######################################
 ###       MQTT startup              ###
 #######################################
-client = paho.Client(client_id="", userdata=None, protocol=paho.MQTTv5)
+
 def mqttStart():
+  client = paho.Client(client_id="", userdata=None, protocol=paho.MQTTv5)
   # using MQTT version 5 here, for 3.1.1: MQTTv311, 3.1: MQTTv31
   # userdata is user defined data of any type, updated by user_data_set()
   # client_id is the given name of the client
@@ -146,7 +127,6 @@ def mqttStart():
 
   # subscribe to all topics of encyclopedia by using the wildcard "#"
   client.subscribe("airbag/#", qos=1)
-  client.publish("airbag/sensitivity", "4545,50,True", 1)
   # loop_forever for simplicity, here you need to stop the loop manually
   # you can also use loop_start and loop_stop
   client.loop_forever()
@@ -164,29 +144,7 @@ app.mount("/public", StaticFiles(directory=os.path.dirname(__file__) + "/public"
 @app.get("/", response_class=HTMLResponse)
 def get_html() -> HTMLResponse:
     with open(os.path.dirname(__file__) + "/views/home.html") as html:
-        return HTMLResponse(content=html.read())
-    
-
-@app.websocket("/ws/{client_id}")
-async def websocket_endpoint(websocket: WebSocket, client_id: int):
-    await manager.connect(websocket)
-    try:
-        startingTime = time.time()
-        while (True):
-            nowTime = time.time()
-            data = await websocket.receive_text()
-            if((nowTime - startingTime) >= 5.0):
-              sendBack = {}
-              for ids in data:
-                sendBack[ids] = airbagdb.select_airbags(ids)
-              send = json.dumps(sendBack)
-              await manager.send_personal_message(send, websocket)
-              startTime = time.time
-    except WebSocketDisconnect:
-        manager.disconnect(websocket)
-        await manager.broadcast(f"Client #{client_id} left the chat")
-
-
+        return HTMLResponse(content=html.read())    
 
 #######################################
 ###       Need to be Logged in      ###
@@ -255,7 +213,6 @@ def post_register(user:User, request:Request, response:Response) -> dict:
 @app.get("/login", response_class=HTMLResponse)
 def get_login(request:Request) -> HTMLResponse:
     session = sessions.get_session(request)
-    client.publish("airbag/sensitivity", "4545,50,True", 1)
     if len(session) > 0 and session.get('logged_in'):
         return RedirectResponse(url="/jacket", status_code=302)
     else:

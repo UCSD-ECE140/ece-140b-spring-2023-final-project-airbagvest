@@ -59,9 +59,6 @@ def select_user_airbags(username:str) -> list:
 def update_airbag(airbag_id:int, battery:int, pressurized:int) -> bool:
   db = mysql.connect(**db_config)
   cursor = db.cursor()
-  print(airbag_id)
-  print(battery)
-  print(pressurized)
   query = "update airbags set battery=%s, pressurized=%s where airbag_id=%s;"
   values = (battery, pressurized, airbag_id)
   cursor.execute(query, values)
