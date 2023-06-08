@@ -24,7 +24,7 @@ def register_airbag(airbag_id:int, username:str, battery:str, pressurized:bool) 
   db = mysql.connect(**db_config)
   cursor = db.cursor()
   query = "insert into airbags (airbag_id, username, battery, pressurized) values (%s, %s, %s, %s)"
-  values = (username, battery, pressurized)
+  values = (airbag_id, username, battery, pressurized)
   cursor.execute(query, values)
   db.commit()
   db.close()
@@ -56,10 +56,13 @@ def select_user_airbags(username:str) -> list:
   return result
 
 # UPDATE SQL query
-def update_airbag(airbag_id:int, battery:str, pressurized:bool) -> bool:
+def update_airbag(airbag_id:int, battery:int, pressurized:int) -> bool:
   db = mysql.connect(**db_config)
   cursor = db.cursor()
-  query = "update airbags set battery=%s, pressurized=%s, where airbag_id=%s;"
+  print(airbag_id)
+  print(battery)
+  print(pressurized)
+  query = "update airbags set battery=%s, pressurized=%s where airbag_id=%s;"
   values = (battery, pressurized, airbag_id)
   cursor.execute(query, values)
   db.commit()

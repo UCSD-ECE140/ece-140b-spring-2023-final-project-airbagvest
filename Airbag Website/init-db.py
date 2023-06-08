@@ -6,7 +6,7 @@ from dotenv import load_dotenv
 import bcrypt
 
 # Read Database connection variables
-load_dotenv('credentials.env')
+load_dotenv(os.path.dirname(__file__) + '/credentials.env')
 
 db_host = os.environ['MYSQL_HOST']
 db_user = os.environ['MYSQL_USER']
@@ -56,7 +56,6 @@ try:
    cursor.execute("""
    create table if not exists airbags (
       airbag_id integer unique primary key,
-      airbag_id integer not null,
       username varchar(64) not null,
       battery integer not null,
       pressurized BIT not null,
@@ -89,8 +88,8 @@ for user in users:
   values = (user['first_name'], user['last_name'], user['email'], user['username'], pwd)
   cursor.execute(query, values)
 
-query = 'insert into airbags (username, battery, pressurized) values (%s, %s, %s)'
-values = ('tommy', '100', True)
+query = 'insert into airbags (airbag_id, username, battery, pressurized) values (%s, %s, %s, %s)'
+values = (4545, 'tommy' , '100', True)
 cursor.execute(query, values)
 # Commit the changes and close the connection
 db.commit()

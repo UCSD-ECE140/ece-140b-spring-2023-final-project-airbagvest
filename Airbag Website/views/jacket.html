@@ -13,19 +13,19 @@
     <table>
       <tr>
         <td>
-          <button class="link logo"> <a href="/">
+          <a href="/"> <button class="link logo">
               <img src="/public/favicon.ico" alt="Home" style="width:42px;height:42px;">
-            </a> </button>
+            </button> </a>
         </td>
         <td>
-          <button class="link"> <a href="/profile">
+          <a href="/profile"> <button class="link">
               User Settings
-            </a> </button>
+            </button></a>
         </td>
         <td>
-          <button class="link"> <a href="/jacket">
+          <a href="/jacket"> <button class="link">
               My Jackets
-            </a> </button>
+            </button> </a>
         </td>
         <td>
           <button class="link logout_button">
@@ -38,7 +38,7 @@
 
   <u>
     <center>
-    <h2 class="heading">Jackets</h2>
+      <h2 class="heading">Jackets</h2>
     </center>
   </u>
   <div id="lcontain" class="grid">
@@ -46,10 +46,11 @@
   </div>
 
   <!-- Add airbag ID system (hardware included)-->
-  <div id = "add_form" class="form__group field">
-    <input type="input" class="form__field" placeholder="Name" name="name" id='name' required />
+  <form id="add_form" class="form__group field" action='/addAirbag' method='POST'>
+    <input type="text" class="form__field" placeholder="Name" name="name" id='name' required />
     <label for="name" class="form__label">Jacket ID</label>
-    <input type="submit" value="Submit" id = "form-submit-button">
-  </div>
+    <input type="submit" value="Submit" id="form-submit-button">
+  </form>
 </body>
+
 </html>

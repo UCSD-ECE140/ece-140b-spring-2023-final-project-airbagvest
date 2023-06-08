@@ -115,14 +115,14 @@ def on_message(client, userdata, msg):
         :param msg: the message with topic and payload
     """
     print(msg.topic + " " + str(msg.qos) + " " + str(msg.payload))
-    data = msg.payload.split(',')
-    airbagdb.update_airbag(data[0], data[1], data[2])
+    data = (msg.payload.decode("utf-8")).split(',')
+    airbagdb.update_airbag(int(data[0]), int(data[1]), bool(data[2]))
 
 #######################################
 ###       MQTT startup              ###
 #######################################
+client = paho.Client(client_id="", userdata=None, protocol=paho.MQTTv5)
 def mqttStart():
-  client = paho.Client(client_id="", userdata=None, protocol=paho.MQTTv5)
   # using MQTT version 5 here, for 3.1.1: MQTTv311, 3.1: MQTTv31
   # userdata is user defined data of any type, updated by user_data_set()
   # client_id is the given name of the client
@@ -146,8 +146,7 @@ def mqttStart():
 
   # subscribe to all topics of encyclopedia by using the wildcard "#"
   client.subscribe("airbag/#", qos=1)
-
-
+  client.publish("airbag/sensitivity", "4545,50,True", 1)
   # loop_forever for simplicity, here you need to stop the loop manually
   # you can also use loop_start and loop_stop
   client.loop_forever()
@@ -170,12 +169,13 @@ def get_html() -> HTMLResponse:
 
 @app.websocket("/ws/{client_id}")
 async def websocket_endpoint(websocket: WebSocket, client_id: int):
-    startTime = time.time
     await manager.connect(websocket)
     try:
-        while True:
-            if(time.time - startTime >= 5):
-              data = await websocket.receive_text()
+        startingTime = time.time()
+        while (True):
+            nowTime = time.time()
+            data = await websocket.receive_text()
+            if((nowTime - startingTime) >= 5.0):
               sendBack = {}
               for ids in data:
                 sendBack[ids] = airbagdb.select_airbags(ids)
@@ -255,6 +255,7 @@ def post_register(user:User, request:Request, response:Response) -> dict:
 @app.get("/login", response_class=HTMLResponse)
 def get_login(request:Request) -> HTMLResponse:
     session = sessions.get_session(request)
+    client.publish("airbag/sensitivity", "4545,50,True", 1)
     if len(session) > 0 and session.get('logged_in'):
         return RedirectResponse(url="/jacket", status_code=302)
     else:
@@ -266,7 +267,6 @@ def get_login(request:Request) -> HTMLResponse:
 def post_login(visitor:Visitor, request:Request, response:Response) -> dict:
   username = visitor.username
   password = visitor.password
-
   # Invalidate previous session if logged in
   session = sessions.get_session(request)
   if len(session) > 0:
@@ -324,7 +324,7 @@ def getUserAirbags(request:Request) -> JSONResponse:
 def addComment(airbag:NewAirbag ,request:Request) -> dict:
   session = sessions.get_session(request)
   username = session['username']
-  if(airbagdb.register_airbag(username, airbag.battery, airbag.pressurized)):
+  if(airbagdb.register_airbag(airbag.airbag_id, username, airbag.battery, airbag.pressurized)):
     return {'message': 'Airbag added!', 'changed' : True, }
   else:
     return {'message': 'Something went wrong...', 'changed' : False}

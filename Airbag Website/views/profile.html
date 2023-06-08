@@ -1,56 +1,62 @@
 <!DOCTYPE html>
 <html>
-  <head>
-    <title>User Profile</title>
-    <link rel="icon" type="image/x-icon" href="/public/favicon.ico">
-    <link rel="stylesheet" href="/public/main.css">
-    <script src="public/loggedin.js"></script>
-  </head>
-  <body>
-    <div class = "heading">
-      <table>
-        <tr>
-          <td>
-            <button class="link logo"> <a href="/">
-              <img src="/public/favicon.ico" alt="Home" style="width:42px;height:42px;">
-            </a> </button>
-          </td>
-          <td>
-            <button class="link"> <a href="/profile">
-              User Settings
-            </a> </button>
-          </td>
-          <td>
-            <button class="link"> <a href="/jacket">
-              My Jackets
-            </a> </button>
-          </td>
-          <td>
-            <button class="link logout_button">
-              Logout
-            </button>
-          </td>
-        </tr>
-      </table>
-      </div>
 
-    <main class='container' data-mode='viewing'>
-      <h1>Need to change your username, password, or name? (Just fill what you want to change!)</h1>
-      <div class='edit_view'>
-        <form name='edit_user' action='/profile' method='POST'>
-          <div class='form_row'>
-            <input type='text' name='current_password' pattern="[0-9]{8}" placeholder='Current Password' autofocus required>
-            <input type='text' name='first_name' placeholder='New First Name'>
-            <input type='text' name='last_name' placeholder='New Last Name'>
-            <input name="email" id="email"  pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$" placeholder='New Email'> </input>
-            <input name="username" type="text" max = 64 id="username" placeholder='New Username'> </input>
-            <p></p>
-            <label for = "password">Password must have at least one number, one capital letter, and one lowercase letter, and be 8-64 characters long. <br> </label>
-            <input name="password" type="password" id="passwordText" pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,64}" placeholder='New Password'> </input>
-            <input type= "submit" value='Save' class='save_button link'></span>
-          </div>
-        </form>
-      </div>
-    </main>
-  </body>
+<head>
+  <title>User Profile</title>
+  <link rel="icon" type="image/x-icon" href="/public/favicon.ico">
+  <link rel="stylesheet" href="/public/main.css">
+  <script src="public/loggedin.js"></script>
+</head>
+
+<body>
+  <div class="heading">
+    <table>
+      <tr>
+        <td>
+          <a href="/"> <button class="link logo">
+              <img src="/public/favicon.ico" alt="Home" style="width:42px;height:42px;">
+            </button> </a>
+        </td>
+        <td>
+          <a href="/profile"> <button class="link">
+              User Settings
+            </button></a>
+        </td>
+        <td>
+          <a href="/jacket"> <button class="link"> My Jackets
+            </button> </a>
+        </td>
+        <td>
+          <button class="link logout_button">
+            Logout
+          </button>
+        </td>
+      </tr>
+    </table>
+  </div>
+
+  <main class='container' data-mode='viewing'>
+    <h1>Need to change your username, password, or name? (Just fill what you want to change!)</h1>
+    <div class='edit_view'>
+      <form name='edit_user' action='/profile' method='POST'>
+        <div class='form_row'>
+          <input type='text' name='current_password' pattern="[0-9]{8}" placeholder='Current Password' autofocus
+            required>
+          <input type='text' name='first_name' placeholder='New First Name'>
+          <input type='text' name='last_name' placeholder='New Last Name'>
+          <input name="email" id="email" pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$" placeholder='New Email'>
+          </input>
+          <input name="username" type="text" max=64 id="username" placeholder='New Username'> </input>
+          <p></p>
+          <label for="password">Password must have at least one number, one capital letter, and one lowercase letter,
+            and be 8-64 characters long. <br> </label>
+          <input name="password" type="password" id="passwordText" pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,64}"
+            placeholder='New Password'> </input>
+          <input type="submit" value='Save' class='save_button link'></span>
+        </div>
+      </form>
+    </div>
+  </main>
+</body>
+
 </html>
