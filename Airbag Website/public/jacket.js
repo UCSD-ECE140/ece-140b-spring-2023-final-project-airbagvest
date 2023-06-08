@@ -83,8 +83,8 @@ document.addEventListener("DOMContentLoaded", (event) => {
           //show teams and ideas w/ section 
           // add 
           teamInfo.innerHTML = `
-            <h2 class="id" style="display: none;">${dataHold[dataIndex][0]}</h2>
-            <h2>Airbag Name: Placeholder</h2>
+            <h2>Airbag ID:</h2>
+            <h2 class="id">${dataHold[dataIndex][0]}</h2>
             <span>Battery: </span>
             <span class="battery">${dataHold[dataIndex][1]}</span>
             <div></div>

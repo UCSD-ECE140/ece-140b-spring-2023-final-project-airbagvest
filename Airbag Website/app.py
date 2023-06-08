@@ -352,7 +352,7 @@ def slider_update(slider: SliderValue):
   client.on_message = on_message
   client.on_publish = mqttComms.on_publish
   client.loop_start()
-  client.public("airbag/slider", slider.val, qos=1)
+  client.publish("airbag/slider", slider.val, qos=1)
   client.loop_stop()
   # print(slider.val)
 
