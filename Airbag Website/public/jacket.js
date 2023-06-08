@@ -20,11 +20,8 @@ document.addEventListener("DOMContentLoaded", (event) => {
   }
 
   var leadContainer = document.querySelector("#lcontain");
-  var comContainer = document.querySelector("#ccontain");
   var addForm = document.querySelector("#add_form");
-  var teams = [];
   var teamViews = [];
-  var commentViews = [];
 
   addForm.addEventListener('submit', (event) => {
     // Stop the default form behavior
@@ -48,7 +45,6 @@ document.addEventListener("DOMContentLoaded", (event) => {
   */
   function showUserAirbags() {
     leadContainer.innerHTML = `Loading...`;
-    comContainer.innerHTML = `Choose an airbag to see extra details!`;
     fetch(`http://localhost:6543/airbags/user`)
       .then((response) => {
         if (!response.ok) {
@@ -118,6 +114,28 @@ document.addEventListener("DOMContentLoaded", (event) => {
       });
 
     });
+  }
+
+  var client_id = Date.now()
+  var ws = new WebSocket(`ws://localhost:8000/ws/${client_id}`);
+  ws.onmessage = function (event) {
+        var jackets = event.data;
+        for(var i = 0; i < jackets.length; i++){
+          for(var divs in teamViews){
+            if(divs.querySelector(".id").innerHTML == jackets[i][0]){
+              divs.querySelector(".battery").innerHTML = jackets[i][1];
+              divs.querySelector(".pressurized").innerHTML = jackets[i][2];
+              break;
+            }
+          }
+        }
+    };
+  jacketIDS = [];
+  while (true) {
+    for(var view in teamViews){
+      jacketIDS.push(view.querySelector(".id").innerHTML);
+    }
+    ws.send(jacketIDS);
   }
 });
 
