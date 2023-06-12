@@ -137,6 +137,8 @@ void setup()
   Serial.begin(115200);
   // setup_wifi();
   client.setServer(mqtt_server, 1883); // 1883 is the default port for MQTT server
+  connect_mqttServer();
+  
   if (!mpu.begin())
   {
     Serial.println("Failed to find MPU6050 chip");
