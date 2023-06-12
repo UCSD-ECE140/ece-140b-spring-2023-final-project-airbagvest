@@ -12,6 +12,10 @@ float FALL_THRESHOLD = -1.4;
 
 Adafruit_MPU6050 mpu;
 
+// For battery
+const int MAX_ANALOG_VAL = 4095;
+const float MAX_BATTERY_VOLTAGE = 4.2;
+
 // Replace the SSID/Password details as per your wifi router
 const char *ssid = "yourSSID";
 const char *password = "yourPassword";
@@ -138,7 +142,7 @@ void setup()
   // setup_wifi();
   client.setServer(mqtt_server, 1883); // 1883 is the default port for MQTT server
   connect_mqttServer();
-  
+
   if (!mpu.begin())
   {
     Serial.println("Failed to find MPU6050 chip");
@@ -190,7 +194,13 @@ void loop()
   {
     lastMsg = now;
 
-    client.publish("airbag/data", "4545,55,True"); // topic name (to which this ESP32 publishes its data). 88 is the dummy value.
+    int rawValue = analogRead(34);
+    float voltageLevel = (rawValue / 4095.0) * 2 * 1.1 * 3.3; // calculate voltage level
+    float batteryFraction = voltageLevel / MAX_BATTERY_VOLTAGE;
+
+    String data = DEVICE_ID + "," + String((int)batteryFraction) + ",True";
+
+    client.publish("airbag/data", data.c_str()); // topic name (to which this ESP32 publishes its data). 88 is the dummy value.
   }
 
   delay(10);
