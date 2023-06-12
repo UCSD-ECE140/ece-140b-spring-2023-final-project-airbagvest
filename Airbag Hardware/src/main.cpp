@@ -3,13 +3,15 @@
 #include <Adafruit_MPU6050.h>
 #include <Adafruit_Sensor.h>
 #include <Wire.h>
-#include "PubSubClient.h"
+#include <PubSubClient.h>
 
 #define DEVICE_ID 4545
 #define RELAY_PIN 33
-#define FALL_THRESHOLD -1.4
+
+float FALL_THRESHOLD = -1.4;
 
 Adafruit_MPU6050 mpu;
+
 // Replace the SSID/Password details as per your wifi router
 const char *ssid = "yourSSID";
 const char *password = "yourPassword";
@@ -19,6 +21,10 @@ const char *mqtt_server = "461c2f8dac1642c9b29ae68be3d90e2d.s2.eu.hivemq.cloud";
 WiFiClient espClient;
 PubSubClient client(espClient);
 long lastMsg = 0;
+
+void setup_wifi();
+void callback(char *topic, byte *message, unsigned int length);
+void reconnect();
 
 void connect_mqttServer()
 {
@@ -30,7 +36,7 @@ void connect_mqttServer()
     if (WiFi.status() != WL_CONNECTED)
     {
       // if not connected, then first connect to wifi
-      // setup_wifi();
+      setup_wifi();
     }
 
     // Attempt to connect
@@ -53,12 +59,83 @@ void connect_mqttServer()
     }
   }
 }
+
+void setup_wifi()
+{
+  delay(10);
+  // We start by connecting to a WiFi network
+  Serial.println();
+  Serial.print("Connecting to ");
+  Serial.println(ssid);
+
+  WiFi.begin(ssid, password);
+
+  while (WiFi.status() != WL_CONNECTED)
+  {
+    delay(500);
+    Serial.print(".");
+  }
+
+  Serial.println("");
+  Serial.println("WiFi connected");
+  Serial.println("IP address: ");
+  Serial.println(WiFi.localIP());
+}
+
+void callback(char *topic, byte *message, unsigned int length)
+{
+  Serial.print("Message arrived on topic: ");
+  Serial.print(topic);
+  Serial.print(". Message: ");
+  String messageTemp;
+
+  for (int i = 0; i < length; i++)
+  {
+    Serial.print((char)message[i]);
+    messageTemp += (char)message[i];
+  }
+  Serial.println();
+
+  // Feel free to add more if statements to control more GPIOs with MQTT
+
+  // If a message is received on the topic esp32/output, you check if the message is either "on" or "off".
+  // Changes the output state according to the message
+  if (String(topic) == "aribag/sensitivity")
+  {
+    FALL_THRESHOLD = atof(messageTemp.c_str());
+  }
+}
+
+void reconnect()
+{
+  // Loop until we're reconnected
+  while (!client.connected())
+  {
+    Serial.print("Attempting MQTT connection...");
+    // Attempt to connect
+    if (client.connect("ESP8266Client"))
+    {
+      Serial.println("connected");
+      // Subscribe
+      client.subscribe("esp32/output");
+    }
+    else
+    {
+      Serial.print("failed, rc=");
+      Serial.print(client.state());
+      Serial.println(" try again in 5 seconds");
+      // Wait 5 seconds before retrying
+      delay(5000);
+    }
+  }
+}
+
 void setup()
 {
 
   pinMode(RELAY_PIN, OUTPUT);
   Serial.begin(115200);
-  //setup_wifi();
+  // setup_wifi();
   client.setServer(mqtt_server, 1883); // 1883 is the default port for MQTT server
   if (!mpu.begin())
   {
